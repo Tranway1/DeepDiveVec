@@ -1,0 +1,7 @@
+RAG:
+https://huggingface.co/datasets/enelpol/rag-mini-bioasq
+https://huggingface.co/datasets/neural-bridge/rag-dataset-12000
+https://huggingface.co/datasets/nthakur/mirage-eval-rag-output
+https://huggingface.co/datasets/rag-datasets/rag-mini-wikipedia
+https://huggingface.co/datasets/projecte-aina/RAG_Multilingual  restricted access
+https://huggingface.co/datasets/llmware/rag_instruct_benchmark_tester
