@@ -1,4 +1,6 @@
 import os
+import time
+
 import numpy as np
 import pandas as pd
 import pyarrow as pa
@@ -6,6 +8,8 @@ import pyarrow.feather as feather
 import pyarrow.parquet as parquet
 import pyarrow.orc as orc
 
+# create log file to record the processing
+LOG_FILE = open("processing_value_log.csv", "w")
 def load_encoded_prompts(filename):
     # Load the encoded prompts from the .npy file
     encoded_prompts = np.load(filename, allow_pickle=True)
@@ -29,6 +33,7 @@ def save_data(df, dir_path, base_filename, format, compression=None, compression
     if os.path.exists(filename):
         print(f"File {filename} already exists. Skipping.")
         return
+    s_time = time.time()
     if format == 'csv':
         df.to_csv(filename)
     elif format == 'feather':
@@ -37,11 +42,15 @@ def save_data(df, dir_path, base_filename, format, compression=None, compression
         parquet.write_table(pa.Table.from_pandas(df), filename, compression=compression, compression_level=compression_level)
     elif format == 'orc':
         orc.write_table(pa.Table.from_pandas(df), filename, compression=compression)
+    total_time = time.time()-s_time
+    file_size = os.path.getsize(filename)
+    LOG_FILE.write(f"{filename}, {format}, {compression}, {compression_level}, {file_size}, {total_time}\n")
     print(f"Saved {format} to {filename}")
 
 dir_path = '/Users/chunwei/research/llm-scheduling/'
-embeddings = [f for f in os.listdir(dir_path) if f.endswith('embed.npy')]
+embeddings = [f for f in os.listdir(dir_path) if f.endswith('embed.npy') or f.endswith('embeddings.npy')]
 print("Processing files:", embeddings)
+
 
 for filename in embeddings:
     print("Processing file:", filename)
@@ -86,3 +95,4 @@ for filename in embeddings:
             print(f"Error saving ORC with {compression} compression: {e}")
 
 print("All files processed.")
+LOG_FILE.close()
