@@ -5,3 +5,14 @@ https://huggingface.co/datasets/nthakur/mirage-eval-rag-output
 https://huggingface.co/datasets/rag-datasets/rag-mini-wikipedia
 https://huggingface.co/datasets/projecte-aina/RAG_Multilingual  restricted access
 https://huggingface.co/datasets/llmware/rag_instruct_benchmark_tester
+
+Embeddings:
+https://huggingface.co/datasets/MongoDB/subset_arxiv_papers_with_embeddings
+https://huggingface.co/datasets/Cohere/wikipedia-2023-11-embed-multilingual-v3 zh
+https://huggingface.co/datasets/MongoDB/airbnb_embeddings
+https://huggingface.co/datasets/asahi417/seamless-align-enA-frA.speaker-embedding.hubert-xl
+https://huggingface.co/datasets/asahi417/seamless-align-enA-esA.speaker-embedding.metavoice
+https://huggingface.co/datasets/asahi417/seamless-align-deA-enA.speaker-embedding.metavoice
+https://huggingface.co/datasets/Cohere/wikipedia-22-12-en-embeddings
+https://huggingface.co/datasets/andrewsiah/Eval_Pref_Dataset_with_stella_400M_v5_embeddings
+https://huggingface.co/datasets/Cohere/wikipedia-22-12-simple-embeddings

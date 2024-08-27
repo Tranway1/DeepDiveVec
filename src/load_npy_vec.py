@@ -59,6 +59,7 @@ for filename in embeddings:
 
     # Convert to PyArrow Table
     table = pa.Table.from_pandas(df)
+    print("table: ", table)
 
     base_filename = os.path.splitext(filename)[0]
 
