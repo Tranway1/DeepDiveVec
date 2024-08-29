@@ -29,6 +29,7 @@ def save_data(df, dir_path, base_filename, format, compression=None, compression
     filename_suffix = f"{compression}_{compression_level if compression_level is not None else 'N'}.{format}"
     filename = os.path.join(dir_path, f"vec_{base_filename}_{filename_suffix.lower()}")
     # skip if the file already exists
+    print(f"dataframe shape: {df.shape}")
     if os.path.exists(filename):
         print(f"File {filename} already exists. Skipping.")
         return
@@ -44,10 +45,10 @@ def save_data(df, dir_path, base_filename, format, compression=None, compression
         orc.write_table(df, filename, compression=compression)
     total_time = time.time()-s_time
     file_size = os.path.getsize(filename)
-    LOG_FILE.write(f"{filename}, {format}, {compression}, {compression_level}, {file_size}, {total_time}\n")
+    LOG_FILE.write(f"{filename}, {format}, {compression}, {compression_level}, {file_size}, {total_time}, {df.shape}\n")
     print(f"Saved {format} to {filename}")
 
-dir_path = '/Users/chunwei/research/llm-scheduling/'
+dir_path = '../embeddings/'
 embeddings = [f for f in os.listdir(dir_path) if f.endswith('embed.npy') or f.endswith('embeddings.npy')]
 print("Processing files:", embeddings)
 
@@ -105,3 +106,4 @@ for filename in embeddings:
             print(f"Error saving ORC with {compression} compression: {e}")
 
 print("All files processed.")
+LOG_FILE.close()
