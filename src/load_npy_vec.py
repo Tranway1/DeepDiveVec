@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 
 import numpy as np
@@ -8,11 +9,15 @@ import pyarrow.feather as feather
 import pyarrow.parquet as parquet
 import pyarrow.orc as orc
 
-LOG_FILE = open("processing_vec_log.csv", "w")
+LOG_FILE = open("batch_processing_value_log.csv", "a")
+LOG_READ_FILE = open("batch_read_vec_log.csv", "a")
+LOG_NPY_SIZE = open("batch_npy_size_log.csv", "a")
 def load_encoded_prompts(filename):
     # Load the encoded prompts from the .npy file
     encoded_prompts = np.load(filename, allow_pickle=True)
     print("Loaded encoded prompts from:", filename)
+    size = os.path.getsize(filename)
+    LOG_NPY_SIZE.write(f"{filename}, {size}\n")
     return encoded_prompts
 
 def convert_to_2d_numpy(tensor):
@@ -32,6 +37,22 @@ def save_data(df, dir_path, base_filename, format, compression=None, compression
     print(f"dataframe shape: {df.shape}")
     if os.path.exists(filename):
         print(f"File {filename} already exists. Skipping.")
+        # read the file back into dataframe and count the runtime, then print out the shape of the dataframe to make sure it matches the original
+        start_time = time.time()
+        if format == 'csv':
+            return
+        elif format == 'feather':
+            df_read = feather.read_feather(filename)
+        elif format == 'parquet':
+            df_read = parquet.read_table(filename).to_pandas()
+        elif format == 'orc':
+            df_read = orc.read_table(filename).to_pandas()
+        read_time = time.time() - start_time
+        print(f"Read {format} from {filename}")
+        print(f"Read time: {read_time}")
+        file_size = os.path.getsize(filename)
+        LOG_READ_FILE.write(
+            f"{filename}, {format}, {compression}, {compression_level}, {file_size}, {read_time}, {df_read.shape}\n")
         return
     s_time = time.time()
     if format == 'csv':
@@ -48,8 +69,18 @@ def save_data(df, dir_path, base_filename, format, compression=None, compression
     LOG_FILE.write(f"{filename}, {format}, {compression}, {compression_level}, {file_size}, {total_time}, {df.shape}\n")
     print(f"Saved {format} to {filename}")
 
+
+# Check if at least one file name is provided
+if len(sys.argv) < 2:
+    print("Usage: python script.py <file1> <file2> ...")
+    sys.exit(1)
 dir_path = '../embeddings/'
-embeddings = [f for f in os.listdir(dir_path) if f.endswith('embed.npy') or f.endswith('embeddings.npy')]
+embeddings = sys.argv[1:]
+
+# embeddings = [f for f in os.listdir(dir_path) if f.endswith('embed.npy') or f.endswith('embeddings.npy')]
+# dir_path = '/Users/chunwei/research/llm-scheduling/'
+# embeddings = ['google-qa-length-sfr-embed.npy']
+# exclude_files = ['google-qa-length-sfr-embed.npy']
 print("Processing files:", embeddings)
 
 for filename in embeddings:
@@ -67,7 +98,7 @@ for filename in embeddings:
 
     # Convert to PyArrow Table
     table = pa.Table.from_pandas(df)
-    print("table: ", table)
+    # print("table: ", table)
 
     base_filename = os.path.splitext(filename)[0]
 
